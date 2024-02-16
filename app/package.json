@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "deploy": "firebase deploy --only hosting",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/firebase": "^3.2.1",
+    "firebase": "^10.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -1,33 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
+import { auth } from './firebase';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState<User|null>(null);
+  const signInWithGooglePopUp = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log(result);
+      console.log(result.user);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const signOutUser = async () => {
+    await signOut(auth)
+    console.log('signed out!:');
+  }
+
+  useEffect(()=>{
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          console.log('user:', user);
+          const uid = user.uid;
+          setUser(user);
+          // ...
+          console.log("uid", uid)
+        } else {
+          // User is signed out
+          // ...
+          setUser(null);
+          console.log("user is logged out")
+        }
+      });
+
+}, [])
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <header>
+      <p>Ollie Notes</p>
+    </header>
+    <main>
+      <h1>Ollie Notes</h1>
+      <h2>Sign In</h2>
+      {
+        user
+        ? <div>
+            <h2>Welcome {user.displayName}</h2>
+            <img src={user.photoURL || ""} alt={user.displayName || ""} />
+            <p>{user.email}</p>
+            <button onClick={signOutUser}>Sign Out</button>
+          </div>
+        : <button onClick={signInWithGooglePopUp}>Sign in with Google</button>
+      }
+    </main>
     </>
   )
 }
