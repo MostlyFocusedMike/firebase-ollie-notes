@@ -15,7 +15,7 @@ export default function CurrentUserContextProvider({ children }: ChildrenProps) 
   const context = { currentUser, setCurrentUser };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, setCurrentUser);
+    const unsubscribe = onAuthStateChanged(auth, setCurrentUser)
     // list of user props https://firebase.google.com/docs/reference/js/firebase.User
 
     return () => unsubscribe();
